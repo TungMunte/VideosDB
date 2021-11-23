@@ -1,31 +1,33 @@
 package output.Query;
 
-import fileio.*;
+import fileio.ActionInputData;
+import fileio.Input;
+import fileio.MovieInputData;
+import fileio.SerialInputData;
 import java.util.*;
-import java.util.stream.*;
-import output.*;
+import java.util.stream.Collectors;
+import output.Result;
 
-public class QueryVideoRating extends Query {
+public final class QueryVideoRating extends Query {
     private Map<MovieInputData, List<Double>> movieInputDataListMap;
     private Map<SerialInputData, List<ActionInputData>> serialInputDataListMap;
 
-    public Map<SerialInputData, List<ActionInputData>> getSerialInputDataListMap() {
-        return serialInputDataListMap;
-    }
-
-    public void setSerialInputDataListMap(Map<SerialInputData, List<ActionInputData>> serialInputDataListMap) {
+    public void setSerialInputDataListMap(final Map<SerialInputData,
+            List<ActionInputData>> serialInputDataListMap) {
         this.serialInputDataListMap = serialInputDataListMap;
     }
 
-    public Map<MovieInputData, List<Double>> getMovieInputDataListMap() {
-        return movieInputDataListMap;
-    }
-
-    public void setMovieInputDataListMap(Map<MovieInputData, List<Double>> movieInputDataListMap) {
+    public void setMovieInputDataListMap(final Map<MovieInputData,
+            List<Double>> movieInputDataListMap) {
         this.movieInputDataListMap = movieInputDataListMap;
     }
 
-    public double calculateMediumGradeMovie(List<Double> gradeList) {
+    /**
+     * return medium grade of curent movie
+     *
+     * @param gradeList
+     */
+    public double calculateMediumGradeMovie(final List<Double> gradeList) {
         double sum = 0;
         for (Double grade : gradeList) {
             sum += grade;
@@ -33,11 +35,17 @@ public class QueryVideoRating extends Query {
         return sum / gradeList.size();
     }
 
-    public double calculateMediumGradeSerial(List<ActionInputData> actionInputDataList,
-                                             SerialInputData serialInputData) {
+    /**
+     * return medium grade of curent serial
+     *
+     * @param actionInputDataList
+     * @param serialInputData
+     */
+    public double calculateMediumGradeSerial(final List<ActionInputData> actionInputDataList,
+                                             final SerialInputData serialInputData) {
         double sum = 0;
-        for (int i = 0; i < actionInputDataList.size(); i++) {
-            sum += actionInputDataList.get(i).getGrade();
+        for (ActionInputData actionInputData : actionInputDataList) {
+            sum += actionInputData.getGrade();
         }
         sum = sum / actionInputDataList.size();
         sum = sum / serialInputData.getSeasons().size();
@@ -45,7 +53,7 @@ public class QueryVideoRating extends Query {
     }
 
     @Override
-    public Result query(ActionInputData actionInputData, Input input) {
+    public Result query(final ActionInputData actionInputData, final Input input) {
         Result result = new Result();
         StringBuffer message = new StringBuffer().append("Query result: [");
         HashMap<String, Double> arrangedRatingShow;
@@ -56,18 +64,26 @@ public class QueryVideoRating extends Query {
             for (var entry : this.movieInputDataListMap.entrySet()) {
                 int checkMatchYear = 0;
                 int checkMatchGenre = 0;
-                for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                    if (entry.getKey().getYear() == Integer.parseInt(actionInputData.
-                            getFilters().get(0).get(i))) {
-                        checkMatchYear++;
-                        break;
+                if (actionInputData.getFilters().get(0).get(0) == null) {
+                    checkMatchYear++;
+                } else {
+                    for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
+                        if (entry.getKey().getYear() == Integer.parseInt(actionInputData.
+                                getFilters().get(0).get(i))) {
+                            checkMatchYear++;
+                            break;
+                        }
                     }
                 }
-                for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
-                    if (entry.getKey().getGenres().contains(actionInputData.
-                            getFilters().get(1).get(0)) == true) {
-                        checkMatchGenre++;
-                        break;
+                if (actionInputData.getFilters().get(1).get(0) == null) {
+                    checkMatchGenre++;
+                } else {
+                    for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
+                        if (entry.getKey().getGenres().contains(actionInputData
+                                .getFilters().get(1).get(0))) {
+                            checkMatchGenre++;
+                            break;
+                        }
                     }
                 }
                 if (checkMatchGenre == 1 && checkMatchYear == 1) {
@@ -79,18 +95,26 @@ public class QueryVideoRating extends Query {
             for (var entry : this.serialInputDataListMap.entrySet()) {
                 int checkMatchYear = 0;
                 int checkMatchGenre = 0;
-                for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                    if (entry.getKey().getYear() == Integer.parseInt(actionInputData.
-                            getFilters().get(0).get(i))) {
-                        checkMatchYear++;
-                        break;
+                if (actionInputData.getFilters().get(0).get(0) == null) {
+                    checkMatchYear++;
+                } else {
+                    for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
+                        if (entry.getKey().getYear() == Integer.parseInt(actionInputData.
+                                getFilters().get(0).get(i))) {
+                            checkMatchYear++;
+                            break;
+                        }
                     }
                 }
-                for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
-                    if (entry.getKey().getGenres().contains(actionInputData.
-                            getFilters().get(1).get(0)) == true) {
-                        checkMatchGenre++;
-                        break;
+                if (actionInputData.getFilters().get(1).get(0) == null) {
+                    checkMatchGenre++;
+                } else {
+                    for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
+                        if (entry.getKey().getGenres().contains(actionInputData
+                                .getFilters().get(1).get(0))) {
+                            checkMatchGenre++;
+                            break;
+                        }
                     }
                 }
                 if (checkMatchGenre == 1 && checkMatchYear == 1) {
@@ -104,12 +128,14 @@ public class QueryVideoRating extends Query {
             arrangedRatingShow = unsortedShowList.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                            toMap(Map.Entry::getKey,
+                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         } else {
             arrangedRatingShow = unsortedShowList.entrySet().stream().
                     sorted(Map.Entry.<String, Double>comparingByValue().reversed()).
                     collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                            toMap(Map.Entry::getKey,
+                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         }
 
         for (var entry : arrangedRatingShow.entrySet()) {

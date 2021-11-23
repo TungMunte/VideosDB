@@ -1,6 +1,6 @@
 package output;
 
-public class Result {
+public final class Result {
     private int id;
     private StringBuffer message;
 
@@ -12,7 +12,7 @@ public class Result {
         return message;
     }
 
-    public void setMessage(StringBuffer message) {
+    public void setMessage(final StringBuffer message) {
         this.message = message;
     }
 
@@ -20,20 +20,18 @@ public class Result {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
-    public Result(int id, StringBuffer message) {
+    public Result(final int id, final StringBuffer message) {
         this.id = id;
         this.message = new StringBuffer(message);
     }
 
     @Override
     public String toString() {
-        return "{" +
-                "id:" + id +
-                "," + "message:" + message +
-                '}';
+        return "{" + "id:" + id
+                + "," + "message:" + message + '}';
     }
 }

@@ -1,10 +1,10 @@
 package output.Store;
 
-public class StoreRecommendSearch {
+public final class StoreRecommendSearch {
     private String nameShow;
     private Double grade;
 
-    public StoreRecommendSearch(String nameShow, Double grade) {
+    public StoreRecommendSearch(final String nameShow, final Double grade) {
         this.nameShow = nameShow;
         this.grade = grade;
     }
@@ -13,7 +13,7 @@ public class StoreRecommendSearch {
         return grade;
     }
 
-    public void setGrade(Double grade) {
+    public void setGrade(final Double grade) {
         this.grade = grade;
     }
 
@@ -21,7 +21,4 @@ public class StoreRecommendSearch {
         return nameShow;
     }
 
-    public void setNameShow(String nameShow) {
-        this.nameShow = nameShow;
-    }
 }

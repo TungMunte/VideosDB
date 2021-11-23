@@ -1,37 +1,38 @@
 package output.Query;
 
-import fileio.*;
-import java.awt.*;
+import fileio.ShowInput;
+import fileio.ActionInputData;
+import fileio.Input;
+import fileio.MovieInputData;
+import fileio.SerialInputData;
 import java.util.*;
-import java.util.List;
-import java.util.stream.*;
-import output.*;
+import java.util.stream.Collectors;
+import output.Result;
 
-public class QueryActorAverage extends Query {
-    private HashMap<ShowInput, Double> mediumRatedShow = new HashMap<>();
+public final class QueryActorAverage extends Query {
+    private final HashMap<ShowInput, Double> mediumRatedShow = new HashMap<>();
     private Map<MovieInputData, List<Double>> movieInputDataListMap;
     private Map<SerialInputData, List<ActionInputData>> serialInputDataListMap;
 
-    public Map<SerialInputData, List<ActionInputData>> getSerialInputDataListMap() {
-        return serialInputDataListMap;
-    }
-
-    public void setSerialInputDataListMap(Map<SerialInputData, List<ActionInputData>> serialInputDataListMap) {
+    public void setSerialInputDataListMap(final Map<SerialInputData,
+            List<ActionInputData>> serialInputDataListMap) {
         this.serialInputDataListMap = serialInputDataListMap;
     }
 
-    public Map<MovieInputData, List<Double>> getMovieInputDataListMap() {
-        return movieInputDataListMap;
-    }
-
-    public void setMovieInputDataListMap(Map<MovieInputData, List<Double>> movieInputDataListMap) {
+    public void setMovieInputDataListMap(final Map<MovieInputData,
+            List<Double>> movieInputDataListMap) {
         this.movieInputDataListMap = movieInputDataListMap;
     }
 
     public QueryActorAverage() {
     }
 
-    public double calculateMediumGradeMovie(List<Double> gradeList) {
+    /**
+     * calculate medium grade of curent movie
+     *
+     * @param gradeList
+     */
+    public double calculateMediumGradeMovie(final List<Double> gradeList) {
         double sum = 0;
         for (Double grade : gradeList) {
             sum += grade;
@@ -39,7 +40,14 @@ public class QueryActorAverage extends Query {
         return sum / gradeList.size();
     }
 
-    public double calculateMediumGradeSerial(List<ActionInputData> actionInputDataList, SerialInputData serialInputData) {
+    /**
+     * calculate medium grade of curent serial
+     *
+     * @param actionInputDataList
+     * @param serialInputData
+     */
+    public double calculateMediumGradeSerial(final List<ActionInputData> actionInputDataList,
+                                             final SerialInputData serialInputData) {
         Double[] gradeOfSeason = new Double[serialInputData.getSeasons().size()];
         for (int i = 0; i < serialInputData.getSeasons().size(); i++) {
             int countAppearance = 0;
@@ -57,18 +65,14 @@ public class QueryActorAverage extends Query {
             }
         }
         double totalRating = 0;
-        for (int i = 0; i < gradeOfSeason.length; i++) {
-            totalRating += gradeOfSeason[i];
+        for (Double aDouble : gradeOfSeason) {
+            totalRating += aDouble;
         }
         return totalRating / gradeOfSeason.length;
     }
 
-    /**
-     * @param actionInputData
-     * @param input
-     */
     @Override
-    public Result query(ActionInputData actionInputData, Input input) {
+    public Result query(final ActionInputData actionInputData, final Input input) {
         Result result = new Result();
         HashMap<ShowInput, Double> arrangedRatingShow;
         String[] tmpNameList;
@@ -78,18 +82,21 @@ public class QueryActorAverage extends Query {
             mediumRatedShow.put(entry.getKey(), calculateMediumGradeMovie(entry.getValue()));
         }
         for (var entry : this.serialInputDataListMap.entrySet()) {
-            mediumRatedShow.put(entry.getKey(), calculateMediumGradeSerial(entry.getValue(), entry.getKey()));
+            mediumRatedShow.put(entry.getKey(),
+                    calculateMediumGradeSerial(entry.getValue(), entry.getKey()));
         }
         if (actionInputData.getSortType().equals("asc")) {
             arrangedRatingShow = mediumRatedShow.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                            toMap(Map.Entry::getKey,
+                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         } else {
             arrangedRatingShow = mediumRatedShow.entrySet().stream().
                     sorted(Map.Entry.<ShowInput, Double>comparingByValue().reversed()).
                     collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                            toMap(Map.Entry::getKey,
+                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         }
 
         for (var entry : arrangedRatingShow.entrySet()) {
@@ -97,11 +104,21 @@ public class QueryActorAverage extends Query {
             Arrays.sort(tmpNameList);
             storeNameActorList.addAll(Arrays.asList(tmpNameList));
         }
-        for (int i = 0; i < actionInputData.getNumber(); i++) {
-            if (i == 0) {
-                tmpNameActorList.append(storeNameActorList.get(i));
-            } else {
-                tmpNameActorList.append(", ").append(storeNameActorList.get(i));
+        if (actionInputData.getNumber() < storeNameActorList.size()) {
+            for (int i = 0; i < actionInputData.getNumber(); i++) {
+                if (i == 0) {
+                    tmpNameActorList.append(storeNameActorList.get(i));
+                } else {
+                    tmpNameActorList.append(", ").append(storeNameActorList.get(i));
+                }
+            }
+        } else {
+            for (int i = 0; i < storeNameActorList.size(); i++) {
+                if (i == 0) {
+                    tmpNameActorList.append(storeNameActorList.get(i));
+                } else {
+                    tmpNameActorList.append(", ").append(storeNameActorList.get(i));
+                }
             }
         }
         tmpNameActorList.append("]");

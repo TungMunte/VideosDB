@@ -1,6 +1,6 @@
 package output.Store;
 
-public class StoreRecommendBestUnseen {
+public final class StoreRecommendBestUnseen {
     private String nameShow;
     private Double grade;
     private Integer position;
@@ -8,7 +8,9 @@ public class StoreRecommendBestUnseen {
     public StoreRecommendBestUnseen() {
     }
 
-    public StoreRecommendBestUnseen(String nameShow, Double grade, Integer position) {
+    public StoreRecommendBestUnseen(final String nameShow,
+                                    final Double grade,
+                                    final Integer position) {
         this.nameShow = nameShow;
         this.grade = grade;
         this.position = position;
@@ -18,7 +20,7 @@ public class StoreRecommendBestUnseen {
         return grade;
     }
 
-    public void setGrade(double grade) {
+    public void setGrade(final double grade) {
         this.grade = grade;
     }
 
@@ -26,15 +28,7 @@ public class StoreRecommendBestUnseen {
         return nameShow;
     }
 
-    public void setNameShow(String nameShow) {
-        this.nameShow = nameShow;
-    }
-
     public Integer getPosition() {
         return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
     }
 }

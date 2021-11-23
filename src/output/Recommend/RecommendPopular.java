@@ -1,32 +1,28 @@
 package output.Recommend;
 
-import fileio.*;
+import fileio.ActionInputData;
+import fileio.Input;
+import fileio.ShowInput;
+import fileio.UserInputData;
 import java.util.*;
-import output.*;
-import output.Store.*;
+import output.Result;
+import output.Store.StoreRecommendPopular;
 
-public class RecommendPopular extends Recommend {
+public final class RecommendPopular extends Recommend {
     private Map<UserInputData, Map<ShowInput, ActionInputData>> unseenShowOfUser = new HashMap<>();
     private List<String> orderApprearance = new ArrayList<>();
 
-    public List<String> getOrderApprearance() {
-        return orderApprearance;
-    }
-
-    public void setOrderApprearance(List<String> orderApprearance) {
+    public void setOrderApprearance(final List<String> orderApprearance) {
         this.orderApprearance = orderApprearance;
     }
 
-    public Map<UserInputData, Map<ShowInput, ActionInputData>> getUnseenShowOfUser() {
-        return unseenShowOfUser;
-    }
-
-    public void setUnseenShowOfUser(Map<UserInputData, Map<ShowInput, ActionInputData>> unseenShowOfUser) {
+    public void setUnseenShowOfUser(final Map<UserInputData,
+            Map<ShowInput, ActionInputData>> unseenShowOfUser) {
         this.unseenShowOfUser = unseenShowOfUser;
     }
 
     @Override
-    public Result recommend(ActionInputData actionInputData, Input input) {
+    public Result recommend(final ActionInputData actionInputData, final Input input) {
         Result result = new Result();
         StringBuffer message = new StringBuffer().append("PopularRecommendation result: ");
         List<String> unseenShow = new ArrayList<>();
@@ -40,7 +36,7 @@ public class RecommendPopular extends Recommend {
         }
 
         for (String nameShow : this.orderApprearance) {
-            if (currUser.getHistory().containsKey(nameShow) == false) {
+            if (!currUser.getHistory().containsKey(nameShow)) {
                 unseenShow.add(nameShow);
             }
         }
@@ -48,18 +44,19 @@ public class RecommendPopular extends Recommend {
         for (String nameShow : unseenShow) {
             Integer sum = 0;
             for (UserInputData userInputData : input.getUsers()) {
-                if (userInputData.getUsername().equals(currUser.getUsername()) == false) {
-                    if (userInputData.getHistory().containsKey(nameShow) == true) {
+                if (!userInputData.getUsername().equals(currUser.getUsername())) {
+                    if (userInputData.getHistory().containsKey(nameShow)) {
                         sum += userInputData.getHistory().get(nameShow);
                     }
                 }
             }
-            storeRecommendPopularList.add(new StoreRecommendPopular(nameShow, sum, orderApprearance.indexOf(nameShow)));
+            storeRecommendPopularList.add(new StoreRecommendPopular(nameShow,
+                    sum, orderApprearance.indexOf(nameShow)));
         }
 
         Comparator<StoreRecommendPopular> comparator = new Comparator<StoreRecommendPopular>() {
             @Override
-            public int compare(StoreRecommendPopular o1, StoreRecommendPopular o2) {
+            public int compare(final StoreRecommendPopular o1, final StoreRecommendPopular o2) {
                 int result = 0;
                 if (!o1.getNumberOfView().equals(o2.getNumberOfView())) {
                     result = -o1.getNumberOfView().compareTo(o2.getNumberOfView());
@@ -72,10 +69,13 @@ public class RecommendPopular extends Recommend {
 
         Collections.sort(storeRecommendPopularList, comparator);
 
-        if (storeRecommendPopularList.isEmpty() || currUser.getSubscriptionType().equals("BASIC")) {
-            result.setMessage(new StringBuffer("PopularRecommendation cannot be applied!"));
+        if (storeRecommendPopularList.isEmpty()
+                || currUser.getSubscriptionType().equals("BASIC")) {
+            result.setMessage(new StringBuffer(
+                    "PopularRecommendation cannot be applied!"));
         } else {
-            message.append(storeRecommendPopularList.get(0).getNameShow());
+            message.append(storeRecommendPopularList.
+                    get(0).getNameShow());
             result.setMessage(message);
         }
 

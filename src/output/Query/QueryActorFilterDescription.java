@@ -1,12 +1,14 @@
 package output.Query;
 
-import fileio.*;
+import fileio.ActionInputData;
+import fileio.Input;
+import fileio.ActorInputData;
 import java.util.*;
-import output.*;
+import output.Result;
 
-public class QueryActorFilterDescription extends Query {
+public final class QueryActorFilterDescription extends Query {
     @Override
-    public Result query(ActionInputData actionInputData, Input input) {
+    public Result query(final ActionInputData actionInputData, final Input input) {
         Result result = new Result();
         StringBuffer message = new StringBuffer().append("Query result: [");
         List<String> actorList = new ArrayList<>();
@@ -15,7 +17,8 @@ public class QueryActorFilterDescription extends Query {
         for (ActorInputData actorInputData : input.getActors()) {
             int checkMatchCareers = 0;
             for (int i = 0; i < actionInputData.getFilters().get(2).size(); i++) {
-                if (actorInputData.getCareerDescription().contains(actionInputData.getFilters().get(2).get(i)) == true) {
+                if (actorInputData.getCareerDescription()
+                        .contains(actionInputData.getFilters().get(2).get(i))) {
                     checkMatchCareers++;
                 }
             }

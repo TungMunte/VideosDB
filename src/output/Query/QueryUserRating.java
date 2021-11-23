@@ -1,32 +1,25 @@
 package output.Query;
 
-import fileio.*;
+import fileio.ActionInputData;
+import fileio.Input;
 import java.util.*;
-import java.util.stream.*;
-import output.*;
+import java.util.stream.Collectors;
+import output.Result;
 
-public class QueryUserRating extends Query {
+public final class QueryUserRating extends Query {
     private List<String> userNameActiv = new ArrayList<>();
     private List<ActionInputData> actionOfUser = new ArrayList<>();
 
-    public List<ActionInputData> getActionOfUser() {
-        return actionOfUser;
-    }
-
-    public void setActionOfUser(List<ActionInputData> actionOfUser) {
+    public void setActionOfUser(final List<ActionInputData> actionOfUser) {
         this.actionOfUser = actionOfUser;
     }
 
-    public List<String> getUserNameActiv() {
-        return userNameActiv;
-    }
-
-    public void setUserNameActiv(List<String> userNameActiv) {
+    public void setUserNameActiv(final List<String> userNameActiv) {
         this.userNameActiv = userNameActiv;
     }
 
     @Override
-    public Result query(ActionInputData actionInputData, Input input) {
+    public Result query(final ActionInputData actionInputData, final Input input) {
         Result result = new Result();
         StringBuffer message = new StringBuffer().append("Query result: [");
         Map<String, Integer> unsortedNameUser = new HashMap<>();
@@ -49,12 +42,14 @@ public class QueryUserRating extends Query {
             sortedNameUser = unsortedNameUser.entrySet().stream()
                     .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                     .collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                            toMap(Map.Entry::getKey,
+                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         } else {
             sortedNameUser = unsortedNameUser.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                            toMap(Map.Entry::getKey,
+                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         }
 
         for (var entry : sortedNameUser.entrySet()) {
