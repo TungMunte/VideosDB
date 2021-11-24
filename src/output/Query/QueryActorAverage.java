@@ -8,9 +8,9 @@ import fileio.SerialInputData;
 import java.util.*;
 import java.util.stream.Collectors;
 import output.Result;
+import output.Store.*;
 
 public final class QueryActorAverage extends Query {
-    private final HashMap<ShowInput, Double> mediumRatedShow = new HashMap<>();
     private Map<MovieInputData, List<Double>> movieInputDataListMap;
     private Map<SerialInputData, List<ActionInputData>> serialInputDataListMap;
 
@@ -74,35 +74,42 @@ public final class QueryActorAverage extends Query {
     @Override
     public Result query(final ActionInputData actionInputData, final Input input) {
         Result result = new Result();
-        HashMap<ShowInput, Double> arrangedRatingShow;
+        List<StoreQueryActorAverage> storeQueryActorAverageList = new ArrayList<>();
         String[] tmpNameList;
+        List<String> tmpReversedList = new ArrayList<>();
         List<String> storeNameActorList = new ArrayList<>();
         StringBuffer tmpNameActorList = new StringBuffer().append("Query result: [");
         for (var entry : this.movieInputDataListMap.entrySet()) {
-            mediumRatedShow.put(entry.getKey(), calculateMediumGradeMovie(entry.getValue()));
+            storeQueryActorAverageList.add(new StoreQueryActorAverage(
+                    entry.getKey(), calculateMediumGradeMovie(entry.getValue())));
+
         }
         for (var entry : this.serialInputDataListMap.entrySet()) {
-            mediumRatedShow.put(entry.getKey(),
-                    calculateMediumGradeSerial(entry.getValue(), entry.getKey()));
-        }
-        if (actionInputData.getSortType().equals("asc")) {
-            arrangedRatingShow = mediumRatedShow.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        } else {
-            arrangedRatingShow = mediumRatedShow.entrySet().stream().
-                    sorted(Map.Entry.<ShowInput, Double>comparingByValue().reversed()).
-                    collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        }
+            storeQueryActorAverageList.add(new StoreQueryActorAverage(
+                    entry.getKey(), calculateMediumGradeSerial(entry.getValue(),
+                    entry.getKey())));
 
-        for (var entry : arrangedRatingShow.entrySet()) {
-            tmpNameList = entry.getKey().getCast().toArray(new String[0]);
+        }
+        Comparator<StoreQueryActorAverage> comparator = new Comparator<StoreQueryActorAverage>() {
+            @Override
+            public int compare(StoreQueryActorAverage o1, StoreQueryActorAverage o2) {
+                int result = 0;
+                if (!o1.getGrade().equals(o2.getGrade())) {
+                    result = o1.getGrade().compareTo(o2.getGrade());
+                }
+                return result;
+            }
+        };
+        Collections.sort(storeQueryActorAverageList, comparator);
+        if (actionInputData.getSortType().equals("desc")) {
+            Collections.reverse(storeQueryActorAverageList);
+        }
+        for (var object : storeQueryActorAverageList) {
+            tmpNameList = object.getShowInput().getCast().toArray(new String[0]);
             Arrays.sort(tmpNameList);
-            storeNameActorList.addAll(Arrays.asList(tmpNameList));
+            List<String> tmpList = Arrays.asList(tmpNameList);
+            Collections.reverse(tmpList);
+            storeNameActorList.addAll(tmpList);
         }
         if (actionInputData.getNumber() < storeNameActorList.size()) {
             for (int i = 0; i < actionInputData.getNumber(); i++) {

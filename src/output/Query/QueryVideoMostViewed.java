@@ -8,6 +8,7 @@ import fileio.UserInputData;
 import java.util.*;
 import java.util.stream.Collectors;
 import output.Result;
+import output.Store.*;
 
 public final class QueryVideoMostViewed extends Query {
     @Override
@@ -15,10 +16,8 @@ public final class QueryVideoMostViewed extends Query {
         Result result = new Result();
         StringBuffer message = new StringBuffer().append("Query result: [");
         List<String> storeNameShow = new ArrayList<>();
-        Map<String, Integer> unsortedNameShow = new HashMap<>();
-        Map<String, Integer> sortedNameShow;
         List<String> nameList = new ArrayList<>();
-
+        List<StoreQueryMostViewed> storeQueryMostViewedList = new ArrayList<>();
         if (actionInputData.getObjectType().equals("movies")) {
             for (MovieInputData movieInputData : input.getMovies()) {
                 int checkMatchYear = 0;
@@ -89,29 +88,32 @@ public final class QueryVideoMostViewed extends Query {
                 }
             }
             if (sum != 0) {
-                unsortedNameShow.put(s, sum);
+                storeQueryMostViewedList.add(new StoreQueryMostViewed(s, sum));
             }
         }
 
-        if (actionInputData.getSortType().equals("acs")) {
-            sortedNameShow = unsortedNameShow.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        } else {
-            sortedNameShow = unsortedNameShow.entrySet().stream()
-                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        Comparator<StoreQueryMostViewed> comparator = new Comparator<StoreQueryMostViewed>() {
+            @Override
+            public int compare(StoreQueryMostViewed o1, StoreQueryMostViewed o2) {
+                int result = 0;
+                if (!o1.getNumberOfView().equals(o2.getNumberOfView())) {
+                    result = o1.getNumberOfView().compareTo(o2.getNumberOfView());
+                } else {
+                    result = o1.getNameShow().compareTo(o2.getNameShow());
+                }
+                return result;
+            }
+        };
+        Collections.sort(storeQueryMostViewedList, comparator);
+        if (actionInputData.getSortType().equals("desc")) {
+            Collections.reverse(storeQueryMostViewedList);
         }
 
-        for (var entry : sortedNameShow.entrySet()) {
-            nameList.add(entry.getKey());
+        for (var entry : storeQueryMostViewedList) {
+            nameList.add(entry.getNameShow());
         }
 
-        if (actionInputData.getNumber() < sortedNameShow.size()) {
+        if (actionInputData.getNumber() < nameList.size()) {
             for (int i = 0; i < actionInputData.getNumber(); i++) {
                 if (i == 0) {
                     message.append(nameList.get(i));
@@ -120,7 +122,7 @@ public final class QueryVideoMostViewed extends Query {
                 }
             }
         } else {
-            for (int i = 0; i < sortedNameShow.size(); i++) {
+            for (int i = 0; i < nameList.size(); i++) {
                 if (i == 0) {
                     message.append(nameList.get(i));
                 } else {

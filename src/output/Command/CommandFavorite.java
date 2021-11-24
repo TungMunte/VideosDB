@@ -4,7 +4,7 @@ import fileio.ActionInputData;
 import fileio.MovieInputData;
 import fileio.SerialInputData;
 import fileio.UserInputData;
-import java.util.*;
+import java.util.List;
 import output.Result;
 
 public final class CommandFavorite extends Command {

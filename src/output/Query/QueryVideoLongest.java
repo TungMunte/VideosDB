@@ -8,6 +8,7 @@ import fileio.ShowInput;
 import java.util.*;
 import java.util.stream.Collectors;
 import output.Result;
+import output.Store.*;
 
 public class QueryVideoLongest extends Query {
     @Override
@@ -17,7 +18,7 @@ public class QueryVideoLongest extends Query {
         Map<ShowInput, Integer> unsortedNameShow = new HashMap<>();
         Map<ShowInput, Integer> sortedNameShow;
         List<String> nameList = new ArrayList<>();
-
+        List<StoreQueryVideoLongest> storeQueryVideoLongestList = new ArrayList<>();
         if (actionInputData.getObjectType().equals("movies")) {
             for (MovieInputData movieInputData : input.getMovies()) {
                 int checkMatchYear = 0;
@@ -46,6 +47,7 @@ public class QueryVideoLongest extends Query {
                 }
                 if (checkMatchGenre == 1 && checkMatchYear == 1) {
                     unsortedNameShow.put(movieInputData, movieInputData.getDuration());
+                    storeQueryVideoLongestList.add(new StoreQueryVideoLongest(movieInputData.getTitle(), movieInputData.getDuration()));
                 }
             }
         } else {
@@ -80,28 +82,31 @@ public class QueryVideoLongest extends Query {
                         sum += serialInputData.getSeasons().get(i).getDuration();
                     }
                     unsortedNameShow.put(serialInputData, sum);
+                    storeQueryVideoLongestList.add(new StoreQueryVideoLongest(serialInputData.getTitle(), sum));
                 }
             }
         }
 
-        if (actionInputData.getSortType().equals("acs")) {
-            sortedNameShow = unsortedNameShow.entrySet().stream()
-                    .sorted(Map.Entry.<ShowInput, Integer>comparingByValue().reversed())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                    (e1, e2) -> e1, LinkedHashMap::new));
-        } else {
-            sortedNameShow = unsortedNameShow.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                    (e1, e2) -> e1, LinkedHashMap::new));
+        storeQueryVideoLongestList.sort(new Comparator<StoreQueryVideoLongest>() {
+            @Override
+            public int compare(StoreQueryVideoLongest o1, StoreQueryVideoLongest o2) {
+                int result = 0;
+                if (!o1.getNumberOfTime().equals(o2.getNumberOfTime())) {
+                    result = o1.getNumberOfTime().compareTo(o2.getNumberOfTime());
+                } else {
+                    result = o1.getNameShow().compareTo(o2.getNameShow());
+                }
+                return result;
+            }
+        });
+        if (actionInputData.getSortType().equals("desc")){
+            Collections.reverse(storeQueryVideoLongestList);
         }
-        for (var entry : sortedNameShow.entrySet()) {
-            nameList.add(entry.getKey().getTitle());
+        for (var entry : storeQueryVideoLongestList) {
+            nameList.add(entry.getNameShow());
         }
 
-        if (actionInputData.getNumber() < sortedNameShow.size()) {
+        if (actionInputData.getNumber() < nameList.size()) {
             for (int i = 0; i < actionInputData.getNumber(); i++) {
                 if (i == 0) {
                     message.append(nameList.get(i));
@@ -110,7 +115,7 @@ public class QueryVideoLongest extends Query {
                 }
             }
         } else {
-            for (int i = 0; i < sortedNameShow.size(); i++) {
+            for (int i = 0; i < nameList.size(); i++) {
                 if (i == 0) {
                     message.append(nameList.get(i));
                 } else {

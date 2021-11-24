@@ -14,11 +14,12 @@ public final class QueryActorFilterDescription extends Query {
         List<String> actorList = new ArrayList<>();
         String[] actorListToSort;
         List<String> orderedActorList = new ArrayList<>();
+
         for (ActorInputData actorInputData : input.getActors()) {
             int checkMatchCareers = 0;
             for (int i = 0; i < actionInputData.getFilters().get(2).size(); i++) {
-                if (actorInputData.getCareerDescription()
-                        .contains(actionInputData.getFilters().get(2).get(i))) {
+                if (actorInputData.getCareerDescription().toLowerCase().
+                        contains(actionInputData.getFilters().get(2).get(i))) {
                     checkMatchCareers++;
                 }
             }
@@ -27,7 +28,7 @@ public final class QueryActorFilterDescription extends Query {
             }
         }
         actorListToSort = actorList.toArray(new String[0]);
-        if (actionInputData.getSortType().equals("acs")) {
+        if (actionInputData.getSortType().equals("asc")) {
             Arrays.sort(actorListToSort);
         } else {
             Arrays.sort(actorListToSort, Collections.reverseOrder());

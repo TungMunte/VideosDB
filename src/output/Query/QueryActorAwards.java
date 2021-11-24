@@ -4,8 +4,8 @@ import fileio.ActionInputData;
 import fileio.ActorInputData;
 import fileio.Input;
 import java.util.*;
-import java.util.stream.Collectors;
 import output.Result;
+import output.Store.StoreQueryActorAwards;
 
 public final class QueryActorAwards extends Query {
     private final int specialPosition = 3;
@@ -18,44 +18,39 @@ public final class QueryActorAwards extends Query {
     public Result query(final ActionInputData actionInputData, final Input input) {
         Result result = new Result();
         StringBuffer message = new StringBuffer().append("Query result: [");
-        Map<String, Integer> actorList = new HashMap<>();
-        Map<String, Integer> arrangedActorList;
         List<String> actorsName = new ArrayList<>();
-
+        List<StoreQueryActorAwards> storeQueryActorAwardsList = new ArrayList<>();
         for (ActorInputData actorInputData : input.getActors()) {
-            if (actorInputData.getAwards().size() == actionInputData.
-                    getFilters().get(getSpecialPosition()).size()) {
-                int numberOfAwards = 0;
-                int checkMatchAwards = 0;
-                for (String nameAward : actionInputData.getFilters().get(getSpecialPosition())) {
-                    if (actorInputData.getAwards().containsKey(nameAward)) {
-                        checkMatchAwards++;
-                    }
+            int numberOfAwards = 0;
+            int checkMatchAwards = 0;
+            Map<String, Integer> actorAward = new HashMap<>();
+            for (var entry : actorInputData.getAwards().entrySet()) {
+                actorAward.put(String.valueOf(entry.getKey()), entry.getValue());
+            }
+
+            for (String nameAward : actionInputData.getFilters().get(getSpecialPosition())) {
+                if (actorAward.containsKey(nameAward)) {
+                    checkMatchAwards++;
+                    numberOfAwards += actorAward.get(nameAward);
                 }
-                if (checkMatchAwards == actorInputData.getAwards().size()) {
-                    for (int i = 0; i < actorInputData.getAwards().size(); i++) {
-                        numberOfAwards += actorInputData.getAwards().
-                                get(actionInputData.getFilters().get(getSpecialPosition()).get(i));
-                    }
-                }
-                actorList.put(actorInputData.getName(), numberOfAwards);
+            }
+            if (checkMatchAwards == actionInputData.getFilters().get(getSpecialPosition()).size()) {
+                storeQueryActorAwardsList.add(new StoreQueryActorAwards(
+                        actorInputData.getName(), numberOfAwards));
             }
         }
-        if (actionInputData.getSortType().equals("asc")) {
-            arrangedActorList = actorList.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        } else {
-            arrangedActorList = actorList.entrySet().stream()
-                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        Comparator<StoreQueryActorAwards> comparator = new Comparator<StoreQueryActorAwards>() {
+            @Override
+            public int compare(final StoreQueryActorAwards o1, final StoreQueryActorAwards o2) {
+                return o1.getNumberOfAwards().compareTo(o2.getNumberOfAwards());
+            }
+        };
+        Collections.sort(storeQueryActorAwardsList, comparator);
+        if (actionInputData.getSortType().equals("desc")) {
+            Collections.reverse(storeQueryActorAwardsList);
         }
-        for (var entry : arrangedActorList.entrySet()) {
-            actorsName.add(entry.getKey());
+        for (var entry : storeQueryActorAwardsList) {
+            actorsName.add(entry.getNameOfActor());
         }
         for (int i = 0; i < actorsName.size(); i++) {
             if (i == 0) {

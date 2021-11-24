@@ -5,9 +5,6 @@ public final class StoreRecommendPopular {
     private Integer numberOfView;
     private Integer position;
 
-    public StoreRecommendPopular() {
-    }
-
     public StoreRecommendPopular(final String nameShow,
                                  final Integer numberOfView,
                                  final Integer position) {

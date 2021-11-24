@@ -6,8 +6,8 @@ import fileio.MovieInputData;
 import fileio.SerialInputData;
 import fileio.UserInputData;
 import java.util.*;
-import java.util.stream.Collectors;
 import output.Result;
+import output.Store.StoreQueryVideoFavorite;
 
 public class QueryVideoFavorite extends Query {
     @Override
@@ -15,10 +15,8 @@ public class QueryVideoFavorite extends Query {
         Result result = new Result();
         StringBuffer message = new StringBuffer().append("Query result: [");
         List<String> storeNameShow = new ArrayList<>();
-        Map<String, Integer> unsortedNameShow = new HashMap<>();
-        Map<String, Integer> sortedNameShow;
         List<String> nameList = new ArrayList<>();
-
+        List<StoreQueryVideoFavorite> storeQueryVideoFavoriteList = new ArrayList<>();
         if (actionInputData.getObjectType().equals("movies")) {
             for (MovieInputData movieInputData : input.getMovies()) {
                 int checkMatchYear = 0;
@@ -80,7 +78,6 @@ public class QueryVideoFavorite extends Query {
                 }
             }
         }
-
         for (int i = 0; i < storeNameShow.size(); i++) {
             int countApprearacne = 0;
             for (UserInputData userInputData : input.getUsers()) {
@@ -89,29 +86,33 @@ public class QueryVideoFavorite extends Query {
                 }
             }
             if (countApprearacne != 0) {
-                unsortedNameShow.put(storeNameShow.get(i), countApprearacne);
+                storeQueryVideoFavoriteList.add(
+                        new StoreQueryVideoFavorite(storeNameShow.get(i),
+                                countApprearacne));
             }
         }
-
-        if (actionInputData.getSortType().equals("acs")) {
-            sortedNameShow = unsortedNameShow.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        } else {
-            sortedNameShow = unsortedNameShow.entrySet().stream()
-                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        Comparator<StoreQueryVideoFavorite> comparator = new Comparator<StoreQueryVideoFavorite>() {
+            @Override
+            public int compare(StoreQueryVideoFavorite o1, StoreQueryVideoFavorite o2) {
+                int result = 0;
+                if (!o1.getNumberOfFavorite().equals(o2.getNumberOfFavorite())) {
+                    result = o1.getNumberOfFavorite().compareTo(o2.getNumberOfFavorite());
+                } else {
+                    result = o1.getNameVideo().compareTo(o2.getNameVideo());
+                }
+                return result;
+            }
+        };
+        Collections.sort(storeQueryVideoFavoriteList, comparator);
+        if (actionInputData.getSortType().equals("desc")) {
+            Collections.reverse(storeQueryVideoFavoriteList);
         }
 
-        for (var entry : sortedNameShow.entrySet()) {
-            nameList.add(entry.getKey());
+        for (var object : storeQueryVideoFavoriteList) {
+            nameList.add(object.getNameVideo());
         }
 
-        if (actionInputData.getNumber() < sortedNameShow.size()) {
+        if (actionInputData.getNumber() < nameList.size()) {
             for (int i = 0; i < actionInputData.getNumber(); i++) {
                 if (i == 0) {
                     message.append(nameList.get(i));
@@ -120,7 +121,7 @@ public class QueryVideoFavorite extends Query {
                 }
             }
         } else {
-            for (int i = 0; i < sortedNameShow.size(); i++) {
+            for (int i = 0; i < nameList.size(); i++) {
                 if (i == 0) {
                     message.append(nameList.get(i));
                 } else {

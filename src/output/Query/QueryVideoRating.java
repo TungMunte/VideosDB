@@ -7,6 +7,7 @@ import fileio.SerialInputData;
 import java.util.*;
 import java.util.stream.Collectors;
 import output.Result;
+import output.Store.*;
 
 public final class QueryVideoRating extends Query {
     private Map<MovieInputData, List<Double>> movieInputDataListMap;
@@ -56,9 +57,8 @@ public final class QueryVideoRating extends Query {
     public Result query(final ActionInputData actionInputData, final Input input) {
         Result result = new Result();
         StringBuffer message = new StringBuffer().append("Query result: [");
-        HashMap<String, Double> arrangedRatingShow;
-        Map<String, Double> unsortedShowList = new HashMap<>();
         List<String> nameList = new ArrayList<>();
+        List<StoreQueryVideoRating> storeQueryVideoRatingList = new ArrayList<>();
 
         if (actionInputData.getObjectType().equals("movies")) {
             for (var entry : this.movieInputDataListMap.entrySet()) {
@@ -87,8 +87,9 @@ public final class QueryVideoRating extends Query {
                     }
                 }
                 if (checkMatchGenre == 1 && checkMatchYear == 1) {
-                    unsortedShowList.put(entry.getKey().getTitle(),
-                            calculateMediumGradeMovie(entry.getValue()));
+                    storeQueryVideoRatingList.add(new StoreQueryVideoRating(
+                            entry.getKey().getTitle(), calculateMediumGradeMovie(
+                            entry.getValue())));
                 }
             }
         } else {
@@ -118,28 +119,31 @@ public final class QueryVideoRating extends Query {
                     }
                 }
                 if (checkMatchGenre == 1 && checkMatchYear == 1) {
-                    unsortedShowList.put(entry.getKey().getTitle(),
-                            calculateMediumGradeSerial(entry.getValue(), entry.getKey()));
+                    storeQueryVideoRatingList.add(new StoreQueryVideoRating(
+                            entry.getKey().getTitle(), calculateMediumGradeSerial(entry.
+                            getValue(), entry.getKey())));
                 }
             }
         }
 
-        if (actionInputData.getSortType().equals("asc")) {
-            arrangedRatingShow = unsortedShowList.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue())
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        } else {
-            arrangedRatingShow = unsortedShowList.entrySet().stream().
-                    sorted(Map.Entry.<String, Double>comparingByValue().reversed()).
-                    collect(Collectors.
-                            toMap(Map.Entry::getKey,
-                                    Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        storeQueryVideoRatingList.sort(new Comparator<StoreQueryVideoRating>() {
+            @Override
+            public int compare(StoreQueryVideoRating o1, StoreQueryVideoRating o2) {
+                int result = 0;
+                if (!o1.getGrade().equals(o2.getGrade())) {
+                    result = o1.getGrade().compareTo(o2.getGrade());
+                } else {
+                    result = o1.getNameShow().compareTo(o2.getNameShow());
+                }
+                return result;
+            }
+        });
+        if (actionInputData.getSortType().equals("desc")) {
+            Collections.reverse(storeQueryVideoRatingList);
         }
 
-        for (var entry : arrangedRatingShow.entrySet()) {
-            nameList.add(entry.getKey());
+        for (var entry : storeQueryVideoRatingList) {
+            nameList.add(entry.getNameShow());
         }
         if (nameList.size() < actionInputData.getNumber()) {
             for (int i = 0; i < nameList.size(); i++) {

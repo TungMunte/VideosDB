@@ -184,6 +184,7 @@ public final class CommandRating extends Command {
                                 actionInputData.getTitle());
                         findSerial(serialInputDataList, actionInputData,
                                 actionInputData.getTitle());
+
                         result = new Result(actionInputData.getActionId(), message);
                     }
                 }
@@ -206,7 +207,9 @@ public final class CommandRating extends Command {
         boolean ifUserRated = false;
         for (int i = 0; i < currPosition; i++) {
             if (actionInputDataList.get(i).getUsername() != null
-                    && actionInputDataList.get(i).getTitle() != null) {
+                    && actionInputDataList.get(i).getTitle() != null
+                    && actionInputDataList.get(i).getType().equals("rating")
+                    && actionInputDataList.get(i).getActionType().equals("command")) {
                 if (actionInputDataList.get(i).getUsername().
                         equals(currAction.getUsername())
                         && actionInputDataList.get(i).getTitle().
