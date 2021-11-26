@@ -1,12 +1,10 @@
 package output.Store;
 
-import fileio.*;
-
-public class StoreQueryMostViewed {
+public final class StoreQueryMostViewed {
     private String nameShow;
     private Integer numberOfView;
 
-    public StoreQueryMostViewed(String nameShow, Integer numberOfView) {
+    public StoreQueryMostViewed(final String nameShow, final Integer numberOfView) {
         this.nameShow = nameShow;
         this.numberOfView = numberOfView;
     }

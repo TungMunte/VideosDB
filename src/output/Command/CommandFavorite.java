@@ -55,5 +55,4 @@ public final class CommandFavorite extends Command {
         }
         return result;
     }
-
 }

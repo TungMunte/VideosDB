@@ -3,9 +3,15 @@ package main;
 import checker.Checkstyle;
 import checker.Checker;
 import common.Constants;
+import fileio.ActorInputData;
+import fileio.ActionInputData;
 import fileio.Input;
 import fileio.InputLoader;
+import fileio.MovieInputData;
+import fileio.SerialInputData;
+import fileio.UserInputData;
 import fileio.Writer;
+import java.util.*;
 import org.json.*;
 import org.json.simple.JSONArray;
 
@@ -14,7 +20,26 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
+
+import output.Command.CommandFavorite;
+import output.Command.CommandRating;
+import output.Command.CommandView;
+import output.Query.QueryActorAverage;
+import output.Query.QueryActorAwards;
+import output.Query.QueryUserRating;
+import output.Query.QueryVideoFavorite;
+import output.Query.QueryActorFilterDescription;
+import output.Query.QueryVideoLongest;
+import output.Query.QueryVideoRating;
+import output.Query.QueryVideoMostViewed;
+
+import output.Recommend.RecommendSearch;
+import output.Recommend.RecommendPopular;
+import output.Recommend.RecommendStandard;
+import output.Recommend.RecommendBestUnseen;
+import output.Recommend.RecommendFavorite;
+
+import output.Result;
 
 /**
  * The entry point to this homework. It runs the checker that tests your implentation.
@@ -28,6 +53,7 @@ public final class Main {
 
     /**
      * Call the main checker and the coding style checker
+     *
      * @param args from command line
      * @throws IOException in case of exceptions to reading / writing
      */
@@ -73,9 +99,6 @@ public final class Main {
         JSONObject jsonObject = new JSONObject();
         //TODO add here the entry point to your implementation
 
-        /**
-         * get data from json files
-         * */
         List<ActionInputData> actionInputDataList = new ArrayList<>();
         List<ActorInputData> actorInputDataList = new ArrayList<>();
         List<MovieInputData> movieInputDataList = new ArrayList<>();
@@ -98,9 +121,6 @@ public final class Main {
             userInputDataList.addAll(input.getUsers());
         }
 
-        /*
-        store the order of appearance in database
-        * */
         List<String> orderApprearance = new ArrayList<>();
         for (MovieInputData movieInputData : movieInputDataList) {
             orderApprearance.add(movieInputData.getTitle());
@@ -109,9 +129,6 @@ public final class Main {
             orderApprearance.add(serialInputData.getTitle());
         }
 
-        /**
-         * handle data to json files
-         * */
         List<Result> resultList = new ArrayList<>();
         CommandFavorite commandFavorite = new CommandFavorite();
         CommandRating commandRating = new CommandRating();
@@ -131,30 +148,33 @@ public final class Main {
         RecommendStandard recommendStandard = new RecommendStandard();
 
         for (int i = 0; i < actionInputDataList.size(); i++) {
-            System.out.println(actionInputDataList.get(i).getActionId());
             if (actionInputDataList.get(i).getActionType().equals("command")) {
                 if (actionInputDataList.get(i).getType().equals("favorite")) {
-                    resultList.add(commandFavorite.command(actionInputDataList.get(i), userInputDataList
-                            , movieInputDataList, serialInputDataList));
+                    resultList.add(commandFavorite.command(actionInputDataList.get(i),
+                            userInputDataList, movieInputDataList, serialInputDataList));
                     arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                             "", new String(resultList.get(i).getMessage())));
                 } else if (actionInputDataList.get(i).getType().equals("view")) {
-                    resultList.add(commandView.command(actionInputDataList.get(i), userInputDataList
-                            , movieInputDataList, serialInputDataList));
+                    resultList.add(commandView.command(actionInputDataList.get(i),
+                            userInputDataList, movieInputDataList, serialInputDataList));
                     arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                             "", new String(resultList.get(i).getMessage())));
                 } else if (actionInputDataList.get(i).getType().equals("rating")) {
-                    if (commandRating.checkUserUnseen(actionInputDataList.get(i), userInputDataList) == true) {
-                        resultList.add(commandRating.commandUserUnseen(input, actionInputDataList.get(i), userInputDataList));
+                    if (commandRating.checkUserUnseen(actionInputDataList.get(i),
+                            userInputDataList)) {
+                        resultList.add(commandRating.commandUserUnseen(input,
+                                actionInputDataList.get(i), userInputDataList));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                                 "", new String(resultList.get(i).getMessage())));
-                    } else if (commandRating.checkUserRated(actionInputDataList, actionInputDataList.get(i), i) == true) {
+                    } else if (commandRating.checkUserRated(actionInputDataList,
+                            actionInputDataList.get(i), i)) {
                         resultList.add(commandRating.commandUserRated(actionInputDataList.get(i)));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                                 "", new String(resultList.get(i).getMessage())));
                     } else {
-                        resultList.add(commandRating.command(actionInputDataList.get(i), userInputDataList
-                                , movieInputDataList, serialInputDataList));
+                        resultList.add(commandRating.command(actionInputDataList
+                                        .get(i), userInputDataList,
+                                movieInputDataList, serialInputDataList));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                                 "", new String(resultList.get(i).getMessage())));
                     }
@@ -162,60 +182,77 @@ public final class Main {
             } else if (actionInputDataList.get(i).getActionType().equals("query")) {
                 if (actionInputDataList.get(i).getObjectType().equals("actors")) {
                     if (actionInputDataList.get(i).getCriteria().equals("average")) {
-                        queryActorAverage.setMovieInputDataListMap(commandRating.getMovieInputDataListMap());
-                        queryActorAverage.setSerialInputDataListMap(commandRating.getSerialInputDataListMap());
                         resultList.add(queryActorAverage.query(actionInputDataList.get(i), input));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                                 "", new String(resultList.get(i).getMessage())));
                     } else if (actionInputDataList.get(i).getCriteria().equals("awards")) {
                         resultList.add(queryActorAwards.query(actionInputDataList.get(i), input));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
-                                "", new String(resultList.get(i).getMessage())));
+                                "", new String(resultList.get(i)
+                                        .getMessage())));
                     } else if (actionInputDataList.get(i).getCriteria().equals("filter_description")) {
-                        resultList.add(queryActorFilterDescription.query(actionInputDataList.get(i), input));
+                        resultList.add(queryActorFilterDescription.query(actionInputDataList.
+                                get(i), input));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                                 "", new String(resultList.get(i).getMessage())));
                     }
                 } else if (actionInputDataList.get(i).getObjectType().equals("movies")
                         || actionInputDataList.get(i).getObjectType().equals("shows")) {
-                    if (actionInputDataList.get(i).getCriteria().equals("ratings")) {
-                        queryVideoRating.setMovieInputDataListMap(commandRating.getMovieInputDataListMap());
-                        queryVideoRating.setSerialInputDataListMap(commandRating.getSerialInputDataListMap());
-                        resultList.add(queryVideoRating.query(actionInputDataList.get(i), input));
+                    if (actionInputDataList.get(i).
+                            getCriteria().equals("ratings")) {
+                        queryVideoRating.setMovieInputDataListMap(commandRating.
+                                getMovieInputDataListMap());
+                        queryVideoRating.setSerialInputDataListMap(commandRating.
+                                getSerialInputDataListMap());
+                        resultList.add(queryVideoRating.query(actionInputDataList.
+                                get(i), input));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
-                                "", new String(resultList.get(i).getMessage())));
-                    } else if (actionInputDataList.get(i).getCriteria().equals("favorite")) {
-                        resultList.add(queryVideoFavorite.query(actionInputDataList.get(i), input));
+                                "", new String(resultList.
+                                        get(i).getMessage())));
+                    } else if (actionInputDataList.get(i).
+                            getCriteria().equals("favorite")) {
+                        resultList.add(queryVideoFavorite.query(actionInputDataList.
+                                get(i), input));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                                 "", new String(resultList.get(i).getMessage())));
                     } else if (actionInputDataList.get(i).getCriteria().equals("longest")) {
                         resultList.add(queryVideoLongest.query(actionInputDataList.get(i), input));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
-                                "", new String(resultList.get(i).getMessage())));
-                    } else if (actionInputDataList.get(i).getCriteria().equals("most_viewed")) {
-                        resultList.add(queryVideoMostViewed.query(actionInputDataList.get(i), input));
+                                "", new String(resultList.
+                                        get(i).getMessage())));
+                    } else if (actionInputDataList.get(i).
+                            getCriteria().equals("most_viewed")) {
+                        resultList.add(queryVideoMostViewed.query(actionInputDataList.
+                                get(i), input));
                         arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
-                                "", new String(resultList.get(i).getMessage())));
+                                "", new String(resultList.
+                                        get(i).getMessage())));
                     }
                 } else if (actionInputDataList.get(i).getObjectType().equals("users")) {
                     queryUserRating.setUserNameActiv(commandRating.getUserNameActiv());
                     queryUserRating.setActionOfUser(commandRating.getActionOfUser());
-                    resultList.add(queryUserRating.query(actionInputDataList.get(i), input));
+                    resultList.add(queryUserRating.query(actionInputDataList.
+                            get(i), input));
                     arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
-                            "", new String(resultList.get(i).getMessage())));
+                            "", new String(resultList.
+                                    get(i).getMessage())));
                 }
             } else if (actionInputDataList.get(i).getActionType().equals("recommendation")) {
                 if (actionInputDataList.get(i).getType().equals("standard")) {
                     recommendStandard.setOrderApprearance(orderApprearance);
-                    resultList.add(recommendStandard.recommend(actionInputDataList.get(i), input));
+                    resultList.add(recommendStandard.recommend(actionInputDataList.
+                            get(i), input));
                     arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
-                            "", new String(resultList.get(i).getMessage())));
+                            "", new String(resultList.
+                                    get(i).getMessage())));
 
                 } else if (actionInputDataList.get(i).getType().equals("best_unseen")) {
 
                     recommendBestUnseen.setOrderApprearance(orderApprearance);
-                    recommendBestUnseen.setUnseenShowOfUser(commandRating.getUnseenShowOfUser());
-                    resultList.add(recommendBestUnseen.recommend(actionInputDataList.get(i), input));
+                    recommendBestUnseen.setUnseenShowOfUser(commandRating.
+                            getUnseenShowOfUser());
+                    resultList.add(recommendBestUnseen.recommend(actionInputDataList.
+                            get(i), input));
                     arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
                             "", new String(resultList.get(i).getMessage())));
 
@@ -237,7 +274,6 @@ public final class Main {
 
                 } else if (actionInputDataList.get(i).getType().equals("search")) {
 
-                    recommendSearch.setOrderApprearance(orderApprearance);
                     recommendSearch.setUnseenShowOfUser(commandRating.getUnseenShowOfUser());
                     resultList.add(recommendSearch.recommend(actionInputDataList.get(i), input));
                     arrayResult.add(fileWriter.writeFile(resultList.get(i).getId(),
@@ -246,7 +282,6 @@ public final class Main {
                 }
             }
         }
-
         fileWriter.closeJSON(arrayResult);
     }
 }

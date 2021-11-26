@@ -12,11 +12,6 @@ import output.Store.StoreRecommendSearch;
 
 public final class RecommendSearch extends Recommend {
     private Map<UserInputData, Map<ShowInput, ActionInputData>> unseenShowOfUser = new HashMap<>();
-    private List<String> orderApprearance = new ArrayList<>();
-
-    public void setOrderApprearance(final List<String> orderApprearance) {
-        this.orderApprearance = orderApprearance;
-    }
 
     public void setUnseenShowOfUser(final Map<UserInputData,
             Map<ShowInput, ActionInputData>> unseenShowOfUser) {

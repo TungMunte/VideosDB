@@ -1,19 +1,26 @@
 package output.Store;
 
-import fileio.ShowInput;
-import java.util.*;
-
-public class StoreQueryActorAverage {
-    private ShowInput showInput;
+public final class StoreQueryActorAverage {
+    private String nameShow;
+    private StringBuffer nameActor;
     private Double grade;
 
-    public StoreQueryActorAverage(ShowInput showInput, Double grade) {
-        this.showInput = showInput;
+    public StoreQueryActorAverage(final StringBuffer nameActor, final Double grade) {
+        this.nameActor = nameActor;
         this.grade = grade;
     }
 
-    public ShowInput getShowInput() {
-        return showInput;
+    public StoreQueryActorAverage(final String nameShow, final Double grade) {
+        this.nameShow = nameShow;
+        this.grade = grade;
+    }
+
+    public String getNameShow() {
+        return nameShow;
+    }
+
+    public StringBuffer getNameActor() {
+        return nameActor;
     }
 
     public Double getGrade() {

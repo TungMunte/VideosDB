@@ -3,7 +3,6 @@ package output.Query;
 import fileio.ActionInputData;
 import fileio.Input;
 import java.util.*;
-import java.util.stream.Collectors;
 import output.Result;
 import output.Store.StoreQueryUserRating;
 
@@ -40,10 +39,12 @@ public final class QueryUserRating extends Query {
         }
         Comparator<StoreQueryUserRating> comparator = new Comparator<StoreQueryUserRating>() {
             @Override
-            public int compare(StoreQueryUserRating o1, StoreQueryUserRating o2) {
+            public int compare(final StoreQueryUserRating o1,
+                               final StoreQueryUserRating o2) {
                 int result = 0;
                 if (!o1.getNumberOfActive().equals(o2.getNumberOfActive())) {
-                    result = o1.getNumberOfActive().compareTo(o2.getNumberOfActive());
+                    result = o1.getNumberOfActive().compareTo(
+                            o2.getNumberOfActive());
                 } else {
                     result = o1.getUserName().compareTo(o2.getUserName());
                 }

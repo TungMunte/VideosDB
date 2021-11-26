@@ -25,27 +25,36 @@ public final class QueryActorAwards extends Query {
             int checkMatchAwards = 0;
             Map<String, Integer> actorAward = new HashMap<>();
             for (var entry : actorInputData.getAwards().entrySet()) {
+
                 actorAward.put(String.valueOf(entry.getKey()), entry.getValue());
             }
 
             for (String nameAward : actionInputData.getFilters().get(getSpecialPosition())) {
                 if (actorAward.containsKey(nameAward)) {
                     checkMatchAwards++;
-                    numberOfAwards += actorAward.get(nameAward);
+//                    numberOfAwards += actorAward.get(nameAward);
                 }
             }
             if (checkMatchAwards == actionInputData.getFilters().get(getSpecialPosition()).size()) {
+                for (var entry : actorAward.entrySet()) {
+                    numberOfAwards += entry.getValue();
+                }
                 storeQueryActorAwardsList.add(new StoreQueryActorAwards(
                         actorInputData.getName(), numberOfAwards));
             }
         }
-        Comparator<StoreQueryActorAwards> comparator = new Comparator<StoreQueryActorAwards>() {
+        Collections.sort(storeQueryActorAwardsList, new Comparator<StoreQueryActorAwards>() {
             @Override
             public int compare(final StoreQueryActorAwards o1, final StoreQueryActorAwards o2) {
-                return o1.getNumberOfAwards().compareTo(o2.getNumberOfAwards());
+                int result = 0;
+                if (!o1.getNumberOfAwards().equals(o2.getNumberOfAwards())) {
+                    result = o1.getNumberOfAwards().compareTo(o2.getNumberOfAwards());
+                } else {
+                    result = o1.getNameOfActor().compareTo(o2.getNameOfActor());
+                }
+                return result;
             }
-        };
-        Collections.sort(storeQueryActorAwardsList, comparator);
+        });
         if (actionInputData.getSortType().equals("desc")) {
             Collections.reverse(storeQueryActorAwardsList);
         }

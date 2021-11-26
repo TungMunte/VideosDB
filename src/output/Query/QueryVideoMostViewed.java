@@ -6,9 +6,8 @@ import fileio.MovieInputData;
 import fileio.SerialInputData;
 import fileio.UserInputData;
 import java.util.*;
-import java.util.stream.Collectors;
 import output.Result;
-import output.Store.*;
+import output.Store.StoreQueryMostViewed;
 
 public final class QueryVideoMostViewed extends Query {
     @Override
@@ -26,8 +25,9 @@ public final class QueryVideoMostViewed extends Query {
                     checkMatchYear++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                        if (movieInputData.getYear() == Integer.parseInt(actionInputData.
-                                getFilters().get(0).get(0))) {
+                        if (movieInputData.getYear() == Integer.
+                                parseInt(actionInputData.
+                                        getFilters().get(0).get(0))) {
                             checkMatchYear++;
                             break;
                         }
@@ -37,8 +37,9 @@ public final class QueryVideoMostViewed extends Query {
                     checkMatchGenre++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
-                        if (movieInputData.getGenres().contains(actionInputData
-                                .getFilters().get(1).get(0))) {
+                        if (movieInputData.getGenres().
+                                contains(actionInputData
+                                        .getFilters().get(1).get(0))) {
                             checkMatchGenre++;
                             break;
                         }
@@ -56,8 +57,9 @@ public final class QueryVideoMostViewed extends Query {
                     checkMatchYear++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                        if (serialInputData.getYear() == Integer.parseInt(actionInputData.
-                                getFilters().get(0).get(0))) {
+                        if (serialInputData.getYear() == Integer.
+                                parseInt(actionInputData.
+                                        getFilters().get(0).get(0))) {
                             checkMatchYear++;
                             break;
                         }
@@ -67,8 +69,9 @@ public final class QueryVideoMostViewed extends Query {
                     checkMatchGenre++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
-                        if (serialInputData.getGenres().contains(actionInputData
-                                .getFilters().get(1).get(0))) {
+                        if (serialInputData.getGenres().
+                                contains(actionInputData
+                                        .getFilters().get(1).get(0))) {
                             checkMatchGenre++;
                             break;
                         }
@@ -94,12 +97,15 @@ public final class QueryVideoMostViewed extends Query {
 
         Comparator<StoreQueryMostViewed> comparator = new Comparator<StoreQueryMostViewed>() {
             @Override
-            public int compare(StoreQueryMostViewed o1, StoreQueryMostViewed o2) {
+            public int compare(final StoreQueryMostViewed o1,
+                               final StoreQueryMostViewed o2) {
                 int result = 0;
                 if (!o1.getNumberOfView().equals(o2.getNumberOfView())) {
-                    result = o1.getNumberOfView().compareTo(o2.getNumberOfView());
+                    result = o1.getNumberOfView().
+                            compareTo(o2.getNumberOfView());
                 } else {
-                    result = o1.getNameShow().compareTo(o2.getNameShow());
+                    result = o1.getNameShow().
+                            compareTo(o2.getNameShow());
                 }
                 return result;
             }

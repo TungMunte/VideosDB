@@ -6,9 +6,8 @@ import fileio.MovieInputData;
 import fileio.SerialInputData;
 import fileio.ShowInput;
 import java.util.*;
-import java.util.stream.Collectors;
 import output.Result;
-import output.Store.*;
+import output.Store.StoreQueryVideoLongest;
 
 public class QueryVideoLongest extends Query {
     @Override
@@ -27,8 +26,9 @@ public class QueryVideoLongest extends Query {
                     checkMatchYear++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                        if (movieInputData.getYear() == Integer.parseInt(actionInputData.
-                                getFilters().get(0).get(i))) {
+                        if (movieInputData.getYear() == Integer.
+                                parseInt(actionInputData.
+                                        getFilters().get(0).get(i))) {
                             checkMatchYear++;
                             break;
                         }
@@ -38,16 +38,19 @@ public class QueryVideoLongest extends Query {
                     checkMatchGenre++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
-                        if (movieInputData.getGenres().contains(actionInputData
-                                .getFilters().get(1).get(0))) {
+                        if (movieInputData.getGenres().
+                                contains(actionInputData
+                                        .getFilters().get(1).get(0))) {
                             checkMatchGenre++;
                             break;
                         }
                     }
                 }
                 if (checkMatchGenre == 1 && checkMatchYear == 1) {
-                    unsortedNameShow.put(movieInputData, movieInputData.getDuration());
-                    storeQueryVideoLongestList.add(new StoreQueryVideoLongest(movieInputData.getTitle(), movieInputData.getDuration()));
+                    unsortedNameShow.put(movieInputData,
+                            movieInputData.getDuration());
+                    storeQueryVideoLongestList.add(new StoreQueryVideoLongest(
+                            movieInputData.getTitle(), movieInputData.getDuration()));
                 }
             }
         } else {
@@ -58,8 +61,9 @@ public class QueryVideoLongest extends Query {
                     checkMatchYear++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                        if (serialInputData.getYear() == Integer.parseInt(actionInputData.
-                                getFilters().get(0).get(i))) {
+                        if (serialInputData.getYear() == Integer.
+                                parseInt(actionInputData.
+                                        getFilters().get(0).get(i))) {
                             checkMatchYear++;
                             break;
                         }
@@ -82,24 +86,28 @@ public class QueryVideoLongest extends Query {
                         sum += serialInputData.getSeasons().get(i).getDuration();
                     }
                     unsortedNameShow.put(serialInputData, sum);
-                    storeQueryVideoLongestList.add(new StoreQueryVideoLongest(serialInputData.getTitle(), sum));
+                    storeQueryVideoLongestList.add(new StoreQueryVideoLongest(
+                            serialInputData.getTitle(), sum));
                 }
             }
         }
 
         storeQueryVideoLongestList.sort(new Comparator<StoreQueryVideoLongest>() {
             @Override
-            public int compare(StoreQueryVideoLongest o1, StoreQueryVideoLongest o2) {
+            public int compare(final StoreQueryVideoLongest o1,
+                               final StoreQueryVideoLongest o2) {
                 int result = 0;
                 if (!o1.getNumberOfTime().equals(o2.getNumberOfTime())) {
-                    result = o1.getNumberOfTime().compareTo(o2.getNumberOfTime());
+                    result = o1.getNumberOfTime().
+                            compareTo(o2.getNumberOfTime());
                 } else {
-                    result = o1.getNameShow().compareTo(o2.getNameShow());
+                    result = o1.getNameShow().
+                            compareTo(o2.getNameShow());
                 }
                 return result;
             }
         });
-        if (actionInputData.getSortType().equals("desc")){
+        if (actionInputData.getSortType().equals("desc")) {
             Collections.reverse(storeQueryVideoLongestList);
         }
         for (var entry : storeQueryVideoLongestList) {

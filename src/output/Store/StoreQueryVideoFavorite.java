@@ -4,7 +4,8 @@ public final class StoreQueryVideoFavorite {
     private String nameVideo;
     private Integer numberOfFavorite;
 
-    public StoreQueryVideoFavorite(String nameVideo, Integer numberOfFavorite) {
+    public StoreQueryVideoFavorite(final String nameVideo,
+                                   final Integer numberOfFavorite) {
         this.nameVideo = nameVideo;
         this.numberOfFavorite = numberOfFavorite;
     }

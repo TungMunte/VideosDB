@@ -17,10 +17,12 @@ public final class QueryActorFilterDescription extends Query {
 
         for (ActorInputData actorInputData : input.getActors()) {
             int checkMatchCareers = 0;
+            StringBuffer addString = new StringBuffer(" ");
             for (int i = 0; i < actionInputData.getFilters().get(2).size(); i++) {
                 if (actorInputData.getCareerDescription().toLowerCase().
-                        contains(actionInputData.getFilters().get(2).get(i))) {
+                        contains(addString.append(actionInputData.getFilters().get(2).get(i)).append(" "))) {
                     checkMatchCareers++;
+                    addString.delete(0, addString.length());
                 }
             }
             if (checkMatchCareers == actionInputData.getFilters().get(2).size()) {

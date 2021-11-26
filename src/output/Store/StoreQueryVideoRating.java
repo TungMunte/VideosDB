@@ -1,10 +1,10 @@
 package output.Store;
 
-public class StoreQueryVideoRating {
+public final class StoreQueryVideoRating {
     private String nameShow;
     private Double grade;
 
-    public StoreQueryVideoRating(String nameShow, Double grade) {
+    public StoreQueryVideoRating(final String nameShow, final Double grade) {
         this.nameShow = nameShow;
         this.grade = grade;
     }

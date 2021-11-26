@@ -25,8 +25,9 @@ public class QueryVideoFavorite extends Query {
                     checkMatchYear++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                        if (movieInputData.getYear() == Integer.parseInt(actionInputData.
-                                getFilters().get(0).get(i))) {
+                        if (movieInputData.getYear() == Integer.
+                                parseInt(actionInputData.
+                                        getFilters().get(0).get(i))) {
                             checkMatchYear++;
                             break;
                         }
@@ -55,8 +56,9 @@ public class QueryVideoFavorite extends Query {
                     checkMatchYear++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                        if (serialInputData.getYear() == Integer.parseInt(actionInputData.
-                                getFilters().get(0).get(i))) {
+                        if (serialInputData.getYear() == Integer.
+                                parseInt(actionInputData.
+                                        getFilters().get(0).get(i))) {
                             checkMatchYear++;
                             break;
                         }
@@ -65,7 +67,8 @@ public class QueryVideoFavorite extends Query {
                 if (actionInputData.getFilters().get(1).get(0) == null) {
                     checkMatchGenre++;
                 } else {
-                    for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
+                    for (int i = 0; i < actionInputData.getFilters().
+                            get(1).size(); i++) {
                         if (serialInputData.getGenres().contains(actionInputData
                                 .getFilters().get(1).get(0))) {
                             checkMatchGenre++;
@@ -81,7 +84,8 @@ public class QueryVideoFavorite extends Query {
         for (int i = 0; i < storeNameShow.size(); i++) {
             int countApprearacne = 0;
             for (UserInputData userInputData : input.getUsers()) {
-                if (userInputData.getFavoriteMovies().contains(storeNameShow.get(i))) {
+                if (userInputData.getFavoriteMovies().
+                        contains(storeNameShow.get(i))) {
                     countApprearacne++;
                 }
             }
@@ -93,10 +97,13 @@ public class QueryVideoFavorite extends Query {
         }
         Comparator<StoreQueryVideoFavorite> comparator = new Comparator<StoreQueryVideoFavorite>() {
             @Override
-            public int compare(StoreQueryVideoFavorite o1, StoreQueryVideoFavorite o2) {
+            public int compare(final StoreQueryVideoFavorite o1,
+                               final StoreQueryVideoFavorite o2) {
                 int result = 0;
-                if (!o1.getNumberOfFavorite().equals(o2.getNumberOfFavorite())) {
-                    result = o1.getNumberOfFavorite().compareTo(o2.getNumberOfFavorite());
+                if (!o1.getNumberOfFavorite().
+                        equals(o2.getNumberOfFavorite())) {
+                    result = o1.getNumberOfFavorite().
+                            compareTo(o2.getNumberOfFavorite());
                 } else {
                     result = o1.getNameVideo().compareTo(o2.getNameVideo());
                 }

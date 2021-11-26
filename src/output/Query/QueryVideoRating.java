@@ -5,9 +5,8 @@ import fileio.Input;
 import fileio.MovieInputData;
 import fileio.SerialInputData;
 import java.util.*;
-import java.util.stream.Collectors;
 import output.Result;
-import output.Store.*;
+import output.Store.StoreQueryVideoRating;
 
 public final class QueryVideoRating extends Query {
     private Map<MovieInputData, List<Double>> movieInputDataListMap;
@@ -68,8 +67,9 @@ public final class QueryVideoRating extends Query {
                     checkMatchYear++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                        if (entry.getKey().getYear() == Integer.parseInt(actionInputData.
-                                getFilters().get(0).get(i))) {
+                        if (entry.getKey().getYear() == Integer.
+                                parseInt(actionInputData.
+                                        getFilters().get(0).get(i))) {
                             checkMatchYear++;
                             break;
                         }
@@ -79,8 +79,9 @@ public final class QueryVideoRating extends Query {
                     checkMatchGenre++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
-                        if (entry.getKey().getGenres().contains(actionInputData
-                                .getFilters().get(1).get(0))) {
+                        if (entry.getKey().getGenres().
+                                contains(actionInputData
+                                        .getFilters().get(1).get(0))) {
                             checkMatchGenre++;
                             break;
                         }
@@ -100,8 +101,9 @@ public final class QueryVideoRating extends Query {
                     checkMatchYear++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(0).size(); i++) {
-                        if (entry.getKey().getYear() == Integer.parseInt(actionInputData.
-                                getFilters().get(0).get(i))) {
+                        if (entry.getKey().getYear() == Integer.
+                                parseInt(actionInputData.
+                                        getFilters().get(0).get(i))) {
                             checkMatchYear++;
                             break;
                         }
@@ -111,8 +113,9 @@ public final class QueryVideoRating extends Query {
                     checkMatchGenre++;
                 } else {
                     for (int i = 0; i < actionInputData.getFilters().get(1).size(); i++) {
-                        if (entry.getKey().getGenres().contains(actionInputData
-                                .getFilters().get(1).get(0))) {
+                        if (entry.getKey().getGenres().
+                                contains(actionInputData
+                                        .getFilters().get(1).get(0))) {
                             checkMatchGenre++;
                             break;
                         }
@@ -128,7 +131,7 @@ public final class QueryVideoRating extends Query {
 
         storeQueryVideoRatingList.sort(new Comparator<StoreQueryVideoRating>() {
             @Override
-            public int compare(StoreQueryVideoRating o1, StoreQueryVideoRating o2) {
+            public int compare(final StoreQueryVideoRating o1, final StoreQueryVideoRating o2) {
                 int result = 0;
                 if (!o1.getGrade().equals(o2.getGrade())) {
                     result = o1.getGrade().compareTo(o2.getGrade());

@@ -1,10 +1,10 @@
 package output.Store;
 
-public class StoreQueryUserRating {
+public final class StoreQueryUserRating {
     private String userName;
     private Integer numberOfActive;
 
-    public StoreQueryUserRating(String userName, Integer numberOfActive) {
+    public StoreQueryUserRating(final String userName, final Integer numberOfActive) {
         this.numberOfActive = numberOfActive;
         this.userName = userName;
     }
